@@ -1,0 +1,72 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:t="/lib/hudson" xmlns:fmt="jelly:fmt" xmlns:f="/lib/form">
+
+<t:summary icon="/plugin/promotedeploy/images/48x48/promotedeploy.png">
+    <j:if test="${it.configuration == null}">
+        <p><span style="color: red">The Promote Deploy Plugin is not configured</span></p>
+    </j:if>
+    
+    <p><span>Promote Deploy</span></p>
+    
+    <j:if test="${it.hasReadPermission() and it.deploys.size() > 0}">
+        <table class="pane bigtable hover" border="0">
+            <thead>
+                <tr>
+                    <th align="left">Date</th>
+                    <th align="left">${it.configuration.labelId}</th>
+                    <th align="left">${it.configuration.labelDesc}</th>
+                    <th align="left">Environment</th>
+                    <th align="left">User</th>
+                </tr>
+            </thead>
+            <tbody>
+                <j:forEach var="deploy" items="${it.deploysOrderedByDateDesc}">
+                    <tr>
+                        <td><fmt:formatDate value="${deploy.dateTime.time}" pattern="dd/MM/yyyy k:m'h'" dateStyle="medium" /></td>
+                        <td>${deploy.id}</td>
+                        <td>${deploy.desc}</td>
+                        <td>${deploy.environment.name}</td>
+                        <td>${deploy.username}</td>
+                    </tr>
+                </j:forEach>
+            </tbody>
+        </table>
+    </j:if>
+    
+    <j:if test="${it.hasWritePermission() and it.configuration != null}">
+        <div style="width: 600px;padding-top: 20px">
+            <f:form method="post" action="${it.urlName}/saveData">
+                <f:entry name="level" title="Environment">
+                    <select name="environment" class="setting-input dropdownList">
+                        <j:forEach var="item" indexVar="i" items="${it.configuration.environments}">
+                            <j:if test="${it.promotion.environment.name == item.name}">
+                                <option value="${item.name}" selected="true">${item.name}</option>
+                            </j:if>
+                            <j:if test="${it.promotion.environment.name != item.name}">
+                                <option value="${item.name}">${item.name}</option>
+                            </j:if>
+                        </j:forEach>
+                    </select>
+                </f:entry>
+                
+                <j:if test="${it.configuration.labelId != null}">
+                    <f:entry title="${it.configuration.labelId}">
+                        <f:textbox name="id" value="${it.promotion.id}"/>
+                    </f:entry>
+                </j:if>
+                
+                
+                <j:if test="${it.configuration.labelId != null}">
+                    <f:entry title="${it.configuration.labelDesc}">
+                        <f:textarea name="desc" value="${it.promotion.desc}"/>
+                    </f:entry>
+                </j:if>
+                
+                <tr>
+                    <td colspan="2"></td>
+                    <td align="right"><f:submit checkUrl="" value="${%Save}" /></td>
+                </tr>
+            </f:form>
+        </div>
+    </j:if>
+</t:summary>
+</j:jelly>

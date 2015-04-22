@@ -1,0 +1,42 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:t="/lib/hudson" xmlns:fmt="jelly:fmt">
+
+<h2>Promote Deploy</h2>
+<table style="margin-top: 1em; margin-left:1em;" width="100%">
+    
+    <tr>
+       <td><st:nbsp/></td>
+       <td>
+
+           <j:if test="${it.configuration == null}">
+               <p><span style="color: red">The Promote Deploy Plugin is not configured</span></p>
+           </j:if>
+    
+           <table class="pane bigtable hover" width="100%">
+               <thead>
+                   <th align="left">Release</th>
+                   <th align="left">Environment</th>
+                   <th align="left">Date</th>
+                   <th align="left">${it.configuration.labelId}</th>
+                   <th align="left">Username</th>
+               </thead>
+               <tbody>
+                   <j:if test="${it.deploys.size() == 0}">
+                       <tr><td colspan="5">No deploys found</td></tr>
+                   </j:if>
+                   
+                   <j:forEach var="deploy" items="${it.deploys}">
+                       <tr>
+                           <td>${deploy.version}</td>
+                           <td>${deploy.environment.name}</td>
+                           <td><fmt:formatDate value="${deploy.dateTime.time}" pattern="dd/MM/yyyy k:m'h'" dateStyle="medium" /></td>
+                           <td>${deploy.id}</td>
+                           <td>${deploy.username}</td>
+                       </tr>
+                   </j:forEach>
+               </tbody>
+           </table>
+        </td>
+    </tr>
+</table>
+
+</j:jelly>

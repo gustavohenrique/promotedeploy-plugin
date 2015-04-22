@@ -1,0 +1,75 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:fmt="jelly:fmt">
+
+<style type="text/css">
+div.deploys {
+    float: left;
+    position: absolute;
+    top: 20;
+    left: 30;
+    background-color: #ffffff;
+    z-index: 9999;
+    width: 300px;
+    border: 1px solid gray;
+}
+table.history {
+    border: 0px;
+}
+.pointer {
+    cursor: pointer;
+}
+a.hide {
+    text-decoration: none;
+}
+</style>
+
+<script type="text/javascript">
+var showOrHide = function (buildNumber) {
+    $$('.deploys').each(Element.hide);
+    $("divHistory"+buildNumber).show();
+};
+var hide = function () {
+    $$('.deploys').each(Element.hide);
+};
+</script>
+
+<j:set var="lastDeploy" value="${it.lastDeploy}"/>
+<j:set var="envName" value="${lastDeploy.environment.name}"/>
+<j:set var="pluginName" value="promotedeploy"/>
+
+<span class="hover">
+    <img src="${rootURL}/plugin/${pluginName}/images/48x48/promotedeploy.png" width="16" height="16" alt="${envName} ${lastDeploy.username}" title="Promote Deploy history ${envName}" onclick="showOrHide(${build.number})" class="pointer" />
+    
+    <div id="divHistory${build.number}" class="healthReportDetails deploys" style="display: none">
+        <table class="bigtable history" border="0" width="100%" cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th align="left" width="10">
+                        <img title="" alt="" width="16" height="16" src="${rootURL}/plugin/${pluginName}/images/48x48/promotedeploy.png" />
+                    </th>
+                    <th align="left">Promote Deploy history</th>
+                    <th align="right">
+                        <a href="javascript:hide()" class="hide">X</a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <j:if test="${it.deploys.size() == 0}">
+                    <tr><td colspan="3" align="left">No deploys found.</td></tr>
+                </j:if>
+                <j:forEach var="deploy" indexVar="i" items="${it.getDeploysOrderedByDateDesc()}">
+                <tr>
+                    <td align="left">
+                        <img title="" alt="" width="16" height="16" src="${rootURL}/plugin/${pluginName}/images/16x16/${deploy.environment.icon}" />
+                    </td>
+                    <td colspan="2" align="left">
+                        <a href="${build.absoluteUrl}" class="hide">
+                            ${deploy.environment.name} in <fmt:formatDate value="${deploy.dateTime.time}" pattern="dd/MM/yyyy k:m'h'" dateStyle="medium" />
+                        </a>
+                    </td>
+                </tr>
+                </j:forEach>
+            </tbody>
+        </table>
+    </div>
+</span>
+</j:jelly>
