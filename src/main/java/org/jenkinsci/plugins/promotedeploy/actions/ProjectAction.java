@@ -39,12 +39,15 @@ public class ProjectAction implements Action {
         List<Run> builds = project.getBuilds();
         for (Run build : builds) {
             BuildAction action = build.getAction(BuildAction.class);
-            Deploy deploy = action.getLastDeploy();
-            if (deploy.getEnvironment() != null) {
-                deploys.add(deploy);
+            if (action != null) {
+                Deploy deploy = action.getLastDeploy();
+                if (deploy != null && deploy.getEnvironment() != null) {
+                    deploys.add(deploy);
+                }
             }
         }
         DeployHelper.orderByDateDesc(deploys);
+
         return deploys;
     }
     
